@@ -17,9 +17,6 @@ const Statistics = ({comments}) =>{
   const average = (total === 0 ) ? 0 : (good + bad* (-1))/total
   const positive = (total === 0 ) ? 0 : (good * 100)/total
 
-  if(total === 0){
-    return (<div>No feedback given</div>)
-  }else{ 
     return(
       <table>
         <Statistic text="good" value ={good} />
@@ -31,7 +28,6 @@ const Statistics = ({comments}) =>{
       </table>
     )
 
-  }
 
 }
 const Statistic = ({text,value}) =>{
@@ -94,7 +90,11 @@ const App = () => {
       handleClick = {handleOnClickBad}
       text = {'bad'} ></Button>  
       <h1>statistics</h1>
-      <Statistics comments = {comments}> </Statistics>
+      {good === 0 && bad === 0 && neutral === 0 ? (
+        <p>No feed back given</p>
+      ) : (
+        <Statistics comments={comments}> </Statistics>
+      )}
     </div>
   )
 }

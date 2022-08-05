@@ -32,6 +32,7 @@ const App = (props) => {
 
   const [mostVoted, setMostVoted] = useState(0)
 
+
   const handleOnClickNextAnec = () =>{
     const randNum = Math.floor(Math.random()*6)
     return setSelected(randNum);
@@ -46,12 +47,6 @@ const App = (props) => {
     return setVotes(copy)
   }
 
-
-  
-
-
-
-
   return (
     <div>
       <Anecdote type='Anectote of the day' text ={props.anecdotes[selected]} votes = {votes[selected]}> </Anecdote>
@@ -62,8 +57,6 @@ const App = (props) => {
     </div>
   )
 }
-
-
 
 
 
