@@ -22,14 +22,7 @@ const Anecdote = ({type, text, votes})=>{
 
 const App = (props) => {
   const [selected, setSelected] = useState(0)
-
-  const points = { 0: 0, 1: 0, 2: 0, 3: 0 ,4: 0, 5:0 }
-
   const [votes , setVotes] = useState(points)
-  //const keys = Object.keys(points)
-  //const values = Object.values(points)
-  //const max = Math.max(values)
-
   const [mostVoted, setMostVoted] = useState(0)
 
 
@@ -59,7 +52,7 @@ const App = (props) => {
 }
 
 
-
+const points = { 0: 0, 1: 0, 2: 0, 3: 0 ,4: 0, 5:0 }
 
 const anecdotes = [
   'If it hurts, do it more often',
@@ -71,6 +64,6 @@ const anecdotes = [
 ]
 
 ReactDOM.render(
-  <App anecdotes={anecdotes} />,
+  <App anecdotes={anecdotes} points={points} />,
   document.getElementById('root')
 )
