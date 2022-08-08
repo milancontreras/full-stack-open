@@ -2,14 +2,19 @@ import React, { useState, useEffect} from 'react'
 import axios from 'axios'
 
 
-const Countries = ({countries})=>{
+const Countries = ({countries,setFilteredCountries})=>{
 
   return (
-    countries.map((country) => (<Country key ={country.name.common} country={country.name.common}></Country>)))
+    countries.map((country) => (<Country setFilteredCountries={setFilteredCountries} data = {country} key ={country.name.common} countryName={country.name.common}></Country>)))
 }
 
-const Country = ({country})=>{
-  return (<p>{country}</p>)
+const Country = ({countryName, data,setFilteredCountries})=>{
+
+  const handleClick = () =>{
+    setFilteredCountries([data])
+  }
+
+  return (<p>{countryName}<button onClick={handleClick}>show</button></p>)
 }
 
 const CountryBasicData = ({country})=>{
@@ -57,13 +62,13 @@ function App() {
     setFilteredCountries(list)
   }
 
-  const a = ()=>{
+  const countriesDisplay = ()=>{
     if(countriesFiltered.length >=10){
       return (<p>Too many matches, specufy another filter</p>)
     }else if(countriesFiltered.length === 1){
       return (<CountryBasicData country={countriesFiltered[0]}></CountryBasicData>)
     }else{
-      return (<Countries countries={countriesFiltered}></Countries>)
+      return (<Countries countries={countriesFiltered} setFilteredCountries={setFilteredCountries}></Countries>)
     }
   }
   
@@ -74,7 +79,7 @@ function App() {
         find countries: <input value ={newFilter} onChange={hadleFilterChange} />
       </div>
       <div>
-        {a()}
+        {countriesDisplay()}
       </div>
     </div>
   );
