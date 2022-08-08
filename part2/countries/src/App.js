@@ -1,6 +1,7 @@
 import React, { useState, useEffect} from 'react'
 import axios from 'axios'
 
+const api_key = process.env.REACT_APP_API_KEY
 
 const Countries = ({countries,setFilteredCountries})=>{
 
@@ -32,13 +33,56 @@ const CountryBasicData = ({country})=>{
         {languages.map((language,id) => (<li key = {id}>{language}</li>))}
       </ul>     
       <img src={src} alt="flag"></img>
+      <Weather city ={country.capital}></Weather>
     </div>
   )
 }
 
+
+const Weather = ({city})=>{
+  const [ weather, setWeather ] = useState({})
+  const link = `http://api.weatherstack.com/current`
+  +`?access_key=${api_key}`
+  +`&query=${city}`
+
+  useEffect(() => {   
+    axios 
+      .get(link)
+      .then(response => {
+        console.log("response")
+        setWeather(response.data)   
+      })
+  }, [city,link])
+
+  return (
+    <>
+    {weather.current ?(
+      <div>
+        <h2>
+        Weather in {city}
+        </h2>
+        <p><b>temperature: </b>{weather.current.temperature}</p>
+        <img src={weather.current.weather_icons[0]} alt="weather image1" />
+        <p><b>wind:</b>
+        {weather.current.wind_speed} mph 
+        direction {weather.current.wind_dir}
+        </p>
+      </div>      
+    ): null}
+    
+  
+    </>
+  )
+
+
+
+
+
+}
 function App() {
 
   const [ countries, setCountries ] = useState([])
+  
   const [ countriesFiltered, setFilteredCountries ] = useState([])
   const [ newFilter, setFilter ] = useState('')
 
@@ -49,6 +93,8 @@ function App() {
         setCountries(response.data)
       })
   }, [])
+
+  
 
   const hadleFilterChange = (event) =>{
     const inputValue = event.target.value
