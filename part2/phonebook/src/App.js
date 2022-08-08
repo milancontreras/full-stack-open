@@ -1,13 +1,26 @@
+import personService from "./services/persons";
 import React, { useState, useEffect} from 'react'
-import axios from 'axios'
 
-const Persons = ({persons})=>{
+const Persons = ({persons,handleDelete})=>{
   return (
-    persons.map((person) => (<Person key ={person.id} person={person.name} number={person.number}></Person>)))
+    persons.map((person) => (
+    <Person 
+    key ={person.id} 
+    person={person.name} 
+    number={person.number} 
+    handleDelete={()=>handleDelete(person.id)} 
+    ></Person>))
+    )
 }
 
-const Person = ({person, number})=>{
-  return (<p>{person} {number}</p>)
+const Person = ({person, number, handleDelete})=>{
+  //console.log("Desde Person",id)
+  return (
+  <p>
+    {person} {number}
+    <button onClick={handleDelete}>delete</button>
+  </p>
+  )
 }
 
 const Filter =({value, onChange}) => {
@@ -38,19 +51,19 @@ const PersonForm =({onSubmit,valueName,valueNumber,onChangeName,onChangeNumber})
 }
 const App = () => {
   const [ persons, setPersons ] = useState([])
-
-  useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
-      })
-  }, [])
-
-  const [filteredPersons , setFilteredPersons] =useState(persons)  
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ newFilter, setFilter ] = useState('')
+
+  useEffect(() => {
+    personService
+    .getAll()
+    .then(returnedPersons => {
+      setPersons(returnedPersons)
+    })
+  }, [])
+
+  
 
   const handleNameChange = (event) => {
     setNewName(event.target.value)
@@ -63,25 +76,12 @@ const App = () => {
   const handleFilterChange = (event) => {
     const inputValue = event.target.value
     setFilter(inputValue)
-    //console.log("nuevo: "+inputValue)
-    const re = new RegExp(`^${inputValue.toUpperCase()}.*`);
-    const list = persons.filter(person =>{
-      if(person.name.toUpperCase().match(re)){
-        console.log("nombre: "+person.name)
-      }
-      return (
-        person.name.toUpperCase().match(re)
-      )
-    })
-    // console.log('newFilter :>> ', inputValue);
-    // console.log('re :>> ', re);
-    // console.log('list :>> ', JSON.stringify(list));
-    setFilteredPersons(list)
-
   }
+
 
   const addName = (event) => {
     event.preventDefault();
+
     const nameObject ={
       name: newName,
       number: newNumber
@@ -92,18 +92,51 @@ const App = () => {
     })
 
     if(repetidos !== undefined){
-      alert(`${newName} is already added to phonebook`)
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
+        console.log(repetidos.id)
+         personService
+         .update(repetidos.id,nameObject)
+         .then(returnedPerson =>{
+          //console.log("ok")
+          setPersons(persons.map( (person)=> (person.id !== repetidos.id ? person : returnedPerson) ))
+
+          setNewName("")
+          setNewNumber("")
+        })
+        .catch(()=>{
+          //console.log("fail")
+        })
+        
+      }
     }else{
-      const arrayNames = [...persons, nameObject]
-      setPersons(arrayNames)
-      setNewName("")
-      setNewNumber("")
-    }
-   
+      personService
+      .create(nameObject)
+      .then( (returnedPerson)=>{
+        //console.log(returnedPerson)
+        const arrayNames = [...persons, returnedPerson]
+        setPersons(arrayNames)
+        setNewName("")
+        setNewNumber("")
+      }
+        
+      )
+      
+    }  
   }
 
+  const handleDelete = (id)=>{
+    const name = persons.find(person => person.id ===id).name
+    if (window.confirm(`Delete ${name}?`)) {
+      personService
+      .deleteById(id)
+      .then( response => {
+        setPersons(persons.filter(person => person.id !== id))
+      })
+    }
 
-  const personsToDisplay = (newFilter === '' ? persons : filteredPersons)
+    
+  }
+
 
   return (
     <div>
@@ -119,12 +152,14 @@ const App = () => {
         onChangeName={handleNameChange} 
         onChangeNumber={handleNumberChange}
       />
-      
-      <h3>Numbers</h3>
-
-      <Persons persons={personsToDisplay}
+      <h3>Numbers 1</h3>
+      <Persons 
+        persons={persons.filter(person =>{
+          const re = new RegExp(`^${newFilter.toUpperCase()}.*`);
+          return person.name.toUpperCase().match(re)
+        })}
+        handleDelete={handleDelete}
       />
-
     </div>
   )
 }
