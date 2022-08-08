@@ -49,11 +49,23 @@ const PersonForm =({onSubmit,valueName,valueNumber,onChangeName,onChangeNumber})
 
   )
 }
+
+const Notification = ({ message,errorStyle }) => {
+  if (message === null) {
+    return null;
+  }
+  console.log(errorStyle)
+
+  return <div className={errorStyle}>{message}</div>;
+};
+
 const App = () => {
   const [ persons, setPersons ] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ newFilter, setFilter ] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [stateMessage, setStateMessage] = useState(null);
 
   useEffect(() => {
     personService
@@ -97,14 +109,24 @@ const App = () => {
          personService
          .update(repetidos.id,nameObject)
          .then(returnedPerson =>{
-          //console.log("ok")
-          setPersons(persons.map( (person)=> (person.id !== repetidos.id ? person : returnedPerson) ))
+            setPersons(persons.map( (person)=> (person.id !== repetidos.id ? person : returnedPerson) ))
 
-          setNewName("")
-          setNewNumber("")
+            setNewName("")
+            setNewNumber("")
+            setErrorMessage(`Updated ${newName}`)
+            setStateMessage('success')
+            setTimeout(() => {
+              setErrorMessage(null);
+              setStateMessage(null)
+          }, 5000);
         })
         .catch(()=>{
-          //console.log("fail")
+          setErrorMessage(`Information of ${newName} has already been removed from server`)
+            setStateMessage('error')
+            setTimeout(() => {
+              setErrorMessage(null);
+              setStateMessage(null)
+          }, 5000);
         })
         
       }
@@ -114,9 +136,16 @@ const App = () => {
       .then( (returnedPerson)=>{
         //console.log(returnedPerson)
         const arrayNames = [...persons, returnedPerson]
-        setPersons(arrayNames)
+        setPersons(arrayNames)        
         setNewName("")
         setNewNumber("")
+        setErrorMessage(`Added ${newName}`)
+        setStateMessage('success')
+        setTimeout(() => {
+          setErrorMessage(null);
+          setStateMessage(null)
+        }, 5000);
+        
       }
         
       )
@@ -140,6 +169,7 @@ const App = () => {
 
   return (
     <div>
+      <Notification message={errorMessage} errorStyle={stateMessage}/>
       <h2>Phonebook</h2>
 
       <Filter value= {newFilter} onChange={handleFilterChange}/>
