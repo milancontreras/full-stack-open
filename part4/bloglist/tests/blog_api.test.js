@@ -166,6 +166,37 @@ describe('when there is initially some blogs saved', () => {
   
       expect(contents).not.toContain(blogToDelete.title)
     })
+
+    describe('update of a blog', () => {
+      test('succeeds with status code 204 if id is valid', async () => {
+        const blogsAtStart = await helper.blogsInDb()
+        const blogToUpdate = blogsAtStart[0]
+        console.log('data before: ', blogToUpdate)
+
+        // const newBlog = {
+        //   ...blogToUpdate,
+        //   likes:20
+        // }
+        const newBlog = {
+          likes:20
+        }
+    
+        const response = await api
+          .put(`${url_API}/${blogToUpdate.id}`)
+          .send(newBlog)
+          .expect(200)
+
+        
+        const blogsAtEnd = await helper.blogsInDb()
+    
+        expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+
+        const updatedBlog = blogsAtEnd[0]
+
+        expect(updatedBlog.likes).toBe(20)
+    
+      })
+    })
   })
 
 })
