@@ -1,7 +1,7 @@
 //const { identity } = require('lodash');
-const _ = require('lodash');
+const _ = require('lodash')
 
-const dummy = (blogs) => {
+const dummy = () => {
   return 1
 }
 
@@ -14,18 +14,18 @@ const totalLikes = (blogs) => {
     .reduce( (previousValue, currentValue) => {
       return previousValue + currentValue
     },0)
-    
-    return likes
+
+  return likes
 }
 
 const favoriteBlog = (blogs) => {
   if(blogs.length === 0){
     return {}
   }
-  const mosliked = blogs.reduce((result, blog)=>(
+  const mosliked = blogs.reduce((result, blog) => (
     result.likes >= blog.likes ? result : blog
   ),blogs[0])
-  
+
   const returnedBlog = {
     title: mosliked.title,
     author : mosliked.author,
@@ -34,7 +34,7 @@ const favoriteBlog = (blogs) => {
 
 
   return returnedBlog
-  
+
 }
 
 const mostBlogs = (blogs) => {
@@ -43,7 +43,7 @@ const mostBlogs = (blogs) => {
   }else if(blogs.length ===0){
     return {}
   }
-  const authors1 = blogs.reduce((result, blog) =>{
+  const authors1 = blogs.reduce((result, blog) => {
     if (!(result.includes(blog.author))){
       return [...result, blog.author]
     }else{
@@ -65,8 +65,7 @@ const mostBlogs = (blogs) => {
   return ({
     author: authorWithMoreBlogs,
     blogs: maxBlogs
-  });
-  
+  })
 }
 
 const mostBlogs2 = (blogs) => {
@@ -77,12 +76,12 @@ const mostBlogs2 = (blogs) => {
   }
 
   const authorsAndNumberOfBlogs = _.countBy(blogs,'author')
-  
 
-  const author = Object.keys(authorsAndNumberOfBlogs).reduce((actual, next)=>{
+
+  const author = Object.keys(authorsAndNumberOfBlogs).reduce((actual, next ) => {
     return (authorsAndNumberOfBlogs[actual] >=  authorsAndNumberOfBlogs[next] ? actual : next)
   })
-  
+
 
 
   return {
@@ -91,7 +90,7 @@ const mostBlogs2 = (blogs) => {
 
 
   }
-  
+
 }
 
 const mostLikes = (blogs) => {
@@ -102,23 +101,20 @@ const mostLikes = (blogs) => {
     return {}
   }
 
-   const blogsOfEachAuthor = _.groupBy(blogs, "author")
-   //console.log(blogsOfEachAuthor)
+  const blogsOfEachAuthor = _.groupBy(blogs, 'author')
 
-   const authorWithTotalLikes = []
-   for(const author in blogsOfEachAuthor){
-  
+  const authorWithTotalLikes = []
+  for(const author in blogsOfEachAuthor){
+
     authorWithTotalLikes.push( {
       author: author,
       likes: _.sumBy(blogsOfEachAuthor[author], 'likes')
     })
-   }
+  }
 
-   
-
-   const result = authorWithTotalLikes.reduce((actual,next) => {
+  const result = authorWithTotalLikes.reduce((actual,next) => {
     return actual.likes > next.likes ? actual : next
-   })
+  })
 
 
   return result

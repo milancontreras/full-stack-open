@@ -9,7 +9,7 @@ usersRouter.post('/', async (request, response, next) => {
   try{
     const body = request.body
     if(!body.password || body.password.length < 3){
-      response.status(400).json({error: "wrong password format"})
+      response.status(400).json({ error: 'wrong password format' })
     }
 
     const saltRounds = 10
@@ -26,19 +26,19 @@ usersRouter.post('/', async (request, response, next) => {
     response.json(savedUser)
   }catch(exception){
     next(exception)
-  } 
+  }
 })
 
 usersRouter.get('/', async (request, response, next) => {
   try{
 
-    const findedUsers = await User.find({}).populate('blogs',{url:1, title:1,author: 1, id: 1})
+    const findedUsers = await User.find({}).populate('blogs',{ url:1, title:1,author: 1, id: 1 })
 
     response.json(findedUsers)
 
   }catch(exception){
     next(exception)
-  } 
+  }
 })
 
 module.exports = usersRouter

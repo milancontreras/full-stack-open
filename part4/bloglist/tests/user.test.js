@@ -11,10 +11,10 @@ const url_API = '/api/users'
 beforeEach(async () => {
   await User.deleteMany({})
 
-    const passwordHash = await bcrypt.hash('sekret', 10)
-    const user = new User({ name: 'root', username: 'root', passwordHash })
+  const passwordHash = await bcrypt.hash('sekret', 10)
+  const user = new User({ name: 'root', username: 'root', passwordHash })
 
-    await user.save()
+  await user.save()
 
 })
 
@@ -22,9 +22,9 @@ describe('when there is initially one user saved', () => {
 
   test('users are returned as json', async () => {
     await api
-    .get(url_API)
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+      .get(url_API)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
 
 
   })
@@ -52,67 +52,67 @@ describe('when there is initially one user saved', () => {
   })
   test('creation fails with a repeated username', async () => {
     const usersAtStart = await helper.usersInDb()
-  
+
     const newUser = {
       username: 'root',
       name: 'Milan',
       password: '123',
     }
-  
+
     const result = await api
       .post('/api/users')
       .send(newUser)
       .expect(400)
       .expect('Content-Type', /application\/json/)
-  
+
     expect(result.body.error).toContain('`username` to be unique')
-  
+
     const usersAtEnd = await helper.usersInDb()
     expect(usersAtEnd).toHaveLength(usersAtStart.length)
-  
+
   })
   test('creation fails with username lenght < 3', async () => {
     const usersAtStart = await helper.usersInDb()
-  
+
     const newUser = {
       username: 'ro',
       name: 'Milan',
       password: '123',
     }
-  
+
     const result = await api
       .post('/api/users')
       .send(newUser)
       .expect(400)
       .expect('Content-Type', /application\/json/)
-  
+
     expect(result.body.error).toContain('is shorter than the minimum allowed length (3).')
-  
+
     const usersAtEnd = await helper.usersInDb()
     expect(usersAtEnd).toHaveLength(usersAtStart.length)
-  
+
   })
   test('creation fails with password lenght < 3', async () => {
     const usersAtStart = await helper.usersInDb()
-  
+
     const newUser = {
       username: 'mlcont',
       name: 'Milan',
       password: '12',
     }
-  
+
     const result = await api
       .post('/api/users')
       .send(newUser)
       .expect(400)
       .expect('Content-Type', /application\/json/)
-  
+
     expect(result.body.error).toContain('wrong password format')
     console.log(result.body.error)
-  
+
     const usersAtEnd = await helper.usersInDb()
     expect(usersAtEnd).toHaveLength(usersAtStart.length)
-  
+
   })
 })
 
