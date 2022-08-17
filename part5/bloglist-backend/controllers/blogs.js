@@ -18,7 +18,11 @@ router.post('/', async (request, response) => {
   }
 
   const user = request.user
-  const blog = new Blog({ ...request.body, user: user.id })
+  const blog = new Blog(
+    { ...request.body,
+      likes: (request.body.likes || 0),
+      user: user.id }
+    )
 
   const savedBlog = await blog.save()
 
