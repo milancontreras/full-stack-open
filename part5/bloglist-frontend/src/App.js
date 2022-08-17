@@ -10,6 +10,10 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState(null)
+  const [title, setTitle]=useState('')
+  const [author, setAuthor]=useState('')
+  const [url, setUrl]=useState('')
+  
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -22,6 +26,7 @@ const App = () => {
     if(loggedUserJSON){
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
+      blogService.setToken(user.token)
     }
   },[])
 
@@ -42,14 +47,15 @@ const App = () => {
 
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
-      ) 
+      )
 
+      blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
 
     }catch(exception){
-      notify('Wrong credentials','alert')
+      notify('Wrong username or password','alert')
     }
   }
 
@@ -89,10 +95,73 @@ const App = () => {
     
   )
 
+  const handleCreateBlog = async(event) => {
+    event.preventDefault()
+    const newBlog = {
+      title: title,
+      author: author,
+      url: url
+      }
+      
+      try {
+        const result  = await blogService.create(newBlog)
+
+        setBlogs([...blogs, result])
+        notify(`a new blog ${result.title} by ${result.author}`)
+        setTitle('')
+        setAuthor('')
+        setUrl('')
+        
+      } catch (error) {
+        console.log(error)
+        notify(`wrong title, author or url`,'alert')
+      }
+    
+}
+
   const blogsList = () => (
     <div>
+      <Notification notification={notification} />
       <h2>blogs</h2>
       <p>{user ? user.name: null} lloged in <button onClick={handleLogout}>logout</button></p> 
+      <div>
+        <h2>create new</h2>
+        <form onSubmit={handleCreateBlog}>
+          <div>
+          title:
+          <input 
+             type="text"
+             value = {title}
+             name = "title"
+             onChange = {({target}) => setTitle(target.value)}
+          />
+          </div>
+          <div>
+          author:
+            <input 
+              type="text"
+              value = {author}
+              name = "author"
+              onChange = {({target}) => setAuthor(target.value)}
+            />            
+          </div>
+          <div>
+          url:
+            <input 
+                type="text"
+                value = {url}
+                name = "url"
+                onChange = {({target}) => setUrl(target.value)}
+            />
+          </div>
+           
+          
+          
+          
+        <button>create</button>
+        </form>
+        
+      </div>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
