@@ -9,8 +9,6 @@ import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState(null)
   const blogFormRef = useRef()
@@ -18,7 +16,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -26,7 +24,7 @@ const App = () => {
     if(loggedUserJSON){
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
-      console.log(user)
+      //console.log(user)
       blogService.setToken(user.token)
     }
   },[])
@@ -38,7 +36,7 @@ const App = () => {
     }, 3000)
   }
 
-  const login = async userObject =>{
+  const login = async userObject => {
     try{
       const user = await loginService.login(userObject)
 
@@ -53,7 +51,7 @@ const App = () => {
     }
   }
 
-  const handleLogout = () =>{
+  const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     window.localStorage.clear()
     setUser(null)
@@ -75,11 +73,11 @@ const App = () => {
       setBlogs(newBlogs)
     }catch(error){
 
-      console.log(error)
+      notify(`${error.response.data.error}`)
     }
   }
 
-  const addBlog = async( blogObject) =>{
+  const addBlog = async( blogObject) => {
     try {
       blogFormRef.current.toggleVisibility()
       const result  = await blogService.create(blogObject)
@@ -90,14 +88,14 @@ const App = () => {
           name: user.name
         }
       }
-      
+
 
       setBlogs([...blogs, result2])
       notify(`a new blog ${result2.title} by ${result2.author}`)
 
     } catch (error) {
-      console.log(error)
-      notify(`wrong title, author or url`,'alert')
+      //console.log(error)
+      notify('wrong title, author or url','alert')
     }
   }
 
@@ -109,34 +107,34 @@ const App = () => {
         const newBlogs = blogs.filter(blog => blog.id !== blogObject.id)
         setBlogs(newBlogs)
         notify('the blog has been successfully removed')
-  
+
       } catch (error) {
         notify(`${error.response.data.error}`)
       }
     }
 
-    
+
   }
 
-  
+
   const blogsList = () => (
     <div>
       <h2>blogs</h2>
-      <p>{user ? user.name : null}  {user ? user.id : null}lloged in <button onClick={handleLogout}>logout</button></p> 
+      <p>{user ? user.name : null}  {user ? user.id : null}lloged in <button onClick={handleLogout}>logout</button></p>
       <div>
         <Togglable buttonLabel="new note" ref={blogFormRef}>
-        <h2>create new</h2>
+          <h2>create new</h2>
           <BlogForm
-          createBlog={addBlog}
-          /> 
+            createBlog={addBlog}
+          />
         </Togglable>
-              
+
       </div>
       {blogs
-      .sort((a,b) => b.likes - a.likes )
-      .map(blog =>
-        <Blog key={blog.id} blog={blog} updateLikes={updateLikes} removeBlog={removeBlog}/>
-      )}
+        .sort((a,b) => b.likes - a.likes )
+        .map(blog =>
+          <Blog key={blog.id} blog={blog} updateLikes={updateLikes} removeBlog={removeBlog}/>
+        )}
     </div>
   )
 
@@ -144,7 +142,7 @@ const App = () => {
     <div>
       <Notification notification={notification} />
       {user===null ? (<LoginForm login = {login}/>): blogsList()}
-      
+
     </div>
   )
 }
