@@ -20,6 +20,7 @@ module.exports = {
     'react', 'jest'
   ],
   'rules': {
+    'no-unused-vars': 1,
     'react/react-in-jsx-scope': 'off',
     'indent': [
       'error',
