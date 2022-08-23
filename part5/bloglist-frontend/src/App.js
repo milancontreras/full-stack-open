@@ -58,18 +58,24 @@ const App = () => {
 
   }
 
-  const updateLikes = async(id, blogObject) => {
+  const updateLikes = async(id, blogObject,user) => {
     try{
 
       const updatedBlog = await blogService.update(id, blogObject)
-
+      const updatedBlogWithUser = {
+        ...updatedBlog,
+        user
+      }
+      //console.log('updatedBlog: ',updatedBlog)
+      //console.log('updatedBlogUser: ',updatedBlogWithUser)
       const newBlogs = blogs.map(blog => {
-        if(blog.id === updatedBlog.id){
-          return updatedBlog
+        if(blog.id === updatedBlogWithUser.id){
+          return updatedBlogWithUser
         }else{
           return blog
         }
       })
+      console.log(newBlogs)
       setBlogs(newBlogs)
     }catch(error){
 
@@ -109,7 +115,7 @@ const App = () => {
         notify('the blog has been successfully removed')
 
       } catch (error) {
-        notify(`${error.response.data.error}`)
+        notify(`${error.response.data.error}`,'alert')
       }
     }
 

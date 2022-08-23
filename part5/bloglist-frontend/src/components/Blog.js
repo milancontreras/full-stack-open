@@ -16,11 +16,9 @@ const Blog = ( { blog, updateLikes, removeBlog }) => {
 
   const handleOnLike = async () => {
     const newBlog = {
-      ...blog,
       likes : (blog.likes + 1),
-      user: blog.user.id
     }
-    updateLikes(blog.id,newBlog)
+    updateLikes(blog.id,newBlog,blog.user)
   }
 
 
@@ -30,7 +28,7 @@ const Blog = ( { blog, updateLikes, removeBlog }) => {
 
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className="blog">
       <div style={hideWhenVisible}>
         {blog.title} {blog.author}
         <button onClick={toggleVisibility}>show</button>
@@ -41,7 +39,6 @@ const Blog = ( { blog, updateLikes, removeBlog }) => {
         likes {blog.likes}<button onClick={handleOnLike}>like</button><br/>
         {blog.user.name}<br/>
         <button onClick={() => removeBlog(blog)}>remove</button>
-
       </div>
 
     </div>
